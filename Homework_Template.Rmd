@@ -1,0 +1,109 @@
+---
+title: "POLS 6381: Homework Template"
+author: "Student Name"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, message = FALSE, warning = FALSE, error = FALSE,
+  prompt = FALSE, comment = "",
+  collapse = FALSE,
+  tidy = FALSE
+)
+```
+
+
+## 0. Loading Packages
+```{r, warning=FALSE, message=FALSE}
+rm(list=ls()) # Start clean: remove all objects from the workspace
+
+## Libraries
+library(tinytex); library(ggplot2); library(ggpubr); library(stargazer)
+library(haven);   library(faraway); library(MASS);   library(aod)
+library(lmtest);  library(dplyr);   library(AER);    library(glmx)
+library(heatmapFit); library(maxLik); library(reshape2); library(foreign);library(car); 
+
+options(scipen=100); options(digits = 4) 
+
+## Working directory
+setwd("/Users/songeunlee/Documents/GitHub/rmarkdown-homework-template")
+```
+
+## Load the Data
+
+```{r}
+# Make sure the data file is saved in the same folder as this .Rmd file
+data <- read_dta("Olympics_HW.dta")
+
+# Inspect variable names
+names(data)
+
+# Keep observations with non-missing GDP
+subset <- data[complete.cases(data$GDP), ]
+```
+
+## 1. Produce a scatterplot with athletes on the horizontal axis and medals on the vertical axis.(3pts)
+
+```{r fig.width=5, fig.height=3}
+plot(subset$athletes, subset$medals, pch=16) # plot(log(athletes+1), log(medals+1), pch=16)
+```
+
+## 2. Estimate the following bivariate regression model using ordinary least squares:
+
+\[
+medals_i = \beta_0 + \beta_1 athletes_i + \epsilon_i
+\]
+
+### (a) Examine the coefficients; how does increasing the number of athletes by 1 impact the number of medals a country wins?
+
+#### Answer: The estimated coefficient for athletes is 0.1145, which means that increasing the number of athletes by one is associated with an increase of about 0.115 medals, on average.
+
+```{r}
+# Estimate the bivariate OLS regression
+model1 <- lm(medals ~ athletes, data = subset)
+
+# Display regression results
+summary(model1)
+
+# Extract slope coefficient
+coef(model1)["athletes"]
+```
+
+### (b) Examine the t statistic and the p value; is the slope coefficient statistically significant (p < .05)?
+
+#### Answer: Yes, the slope coefficient is statistically significant. The t value is 45.60 and the p-value is less than 0.001, which is far below the 0.05 significance level. Therefore, we reject the null hypothesis that the slope coefficient equals zero.
+
+```{r}
+round(summary(model1)$coefficients, 4)
+```
+
+### (c) Examine the model fit statistics; how much of the variation in medals can be accounted for by differences in the number of athletes?
+
+#### Answer: The R-squared value is 0.6833, which means that about 68.3% of the variation in medals can be explained by differences in the number of athletes.
+
+```{r}
+summary(model1)$r.squared
+```
+
+### (d) Add a regression line from this bivariate model to the scatterplot you produced earlier. (3pts)
+
+#### Answer
+
+```{r fig.width=6, fig.height=4}
+plot(subset$athletes, subset$medals,
+     xlab = "Number of Athletes",
+     ylab = "Number of Medals",
+     main = "Athletes and Medals")
+
+abline(model1, col = "red", lwd = 2)
+```
+
+## 3. What is the correlation (r) between athletes and GDP? What is the R2 from a supplemental regression in which athletes is the dependent variable and GDP is the independent variable? (3pts)
+
+```{r}
+cor(subset$GDP, subset$athletes)
+question3 <- lm(subset$athletes ~ subset$GDP)
+summary(question3)
+```
