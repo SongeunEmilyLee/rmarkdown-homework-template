@@ -37,7 +37,7 @@ An example of the final homework output can be viewed here:
 # How to Use
 
 1. Download or clone this repository.
-2. Open **Homework_Template.Rmd** in RStudio.
+2. Open **Homework_Template.Rmd** in **RStudio**.
 3. Make sure the dataset is located in the same folder as the `.Rmd` file.
 4. Update the YAML header:
 
@@ -54,7 +54,7 @@ date: "`r Sys.Date()`"
 
 # Requirements
 
-This template uses R and R Markdown.
+This template uses **R and R Markdown**.
 
 Commonly used packages include:
 
